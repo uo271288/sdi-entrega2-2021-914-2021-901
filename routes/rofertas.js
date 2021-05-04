@@ -1,17 +1,24 @@
 module.exports = function(app, swig,gestorBD) {
     app.get("/ofertas", function(req, res) {
-        let ofertas = [{
-            "nombre" : "Coche de Golf",
-            "precio" : "100"
-        }]
+        let criterio = {};
+        if( req.query.busqueda != null ){
+            criterio = { "titulo" : {$regex : ".*"+req.query.busqueda+".*"}  };
+        }
 
-        let respuesta = swig.renderFile('views/ofertas.html',{
-            vendedor: 'Tienda de ofertas',
-            ofertas: ofertas
+        gestorBD.obtenerOfertas( criterio,function(ofertas) {
+            if (ofertas == null) {
+                res.send("Error al listar ");
+            } else {
+                let respuesta = swig.renderFile('views/ofertas.html',
+                    {
+                        ofertas : ofertas
+                    });
+                res.send(respuesta);
+            }
         });
-
-        res.send(respuesta);
     });
+
+
 
     app.get('/ofertas/agregar', function (req, res) {
         let respuesta = swig.renderFile('views/agregar.html', {
@@ -20,11 +27,29 @@ module.exports = function(app, swig,gestorBD) {
         res.send(respuesta);
     });
 
+    app.get("/ofertas/comprar/:id", function(req, res) {
+        //       let ofertaId = gestorBD.mongo.ObjectID(req.params.id);
+        //       let compra = {
+        //       ofertaId : ofertaId
+        //  }
+        // gestorBD.insertarCompra(compra ,function(idCompra){
+        //     if ( idCompra == null ){
+        //        res.send(respuesta);
+        //   } else {
+        //        res.redirect("/ofertas.html");
+        //   }
+        //});
+        res.redirect("/ofertas")
+
+    });
+
+
     app.post("/oferta", function(req, res) {
         let oferta = {
             titulo : req.body.titulo,
             detalles : req.body.detalles,
-            precio : req.body.precio
+            precio : req.body.precio,
+            comprador: null
         }
         // Conectarse
         gestorBD.insertarOferta(oferta, function(id){
