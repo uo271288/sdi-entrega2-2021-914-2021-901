@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block titulo %} Compras – MyWallapop {% endblock %}
+{% block contenido_principal %}
+
+<!-- http://librosweb.es/libro/bootstrap_3/capitulo_2/tipos_de_rejillas.html -->
+<!-- Inicio del Bloque Oferta  -->
+<h2>Compras</h2>
+<table class="table table-hover" id="tableOffers">
+    <thead>
+    <tr>
+        <th>Titulo</th>
+        <th>Detalles</th>
+        <th>Precio</th>
+        <th>Correo Comprador</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for oferta in ofertas %}
+    <tr>
+        <td>{{ oferta.titulo }} </td>
+        <td>{{ oferta.detalles }} </td>
+        <td>{{ oferta.precio }} €</td>
+        <td>{{ oferta.autor.email}}</td>
+
+    </tr>
+    {% endfor %}
+    </tbody>
+    <!-- Fin del Bloque Oferta  -->
+</table>
+</div>
+{% endblock %}
