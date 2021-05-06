@@ -1,4 +1,4 @@
-module.exports = function(app, swig,gestorBD) {
+module.exports = function(app, swig,gestorBD, logger) {
     app.get("/ofertas", function(req, res) {
         let criterio = {};
         if( req.query.busqueda != null ){
@@ -11,7 +11,8 @@ module.exports = function(app, swig,gestorBD) {
             } else {
                 let respuesta = swig.renderFile('views/ofertas.html',
                     {
-                        ofertas : ofertas
+                        ofertas : ofertas,
+                        usuario: req.session.usuario
                     });
                 res.send(respuesta);
             }
@@ -54,8 +55,10 @@ module.exports = function(app, swig,gestorBD) {
         // Conectarse
         gestorBD.insertarOferta(oferta, function(id){
             if (id == null) {
+                logger.info("Error al insertar oferta");
                 res.send("Error al insertar la oferta");
             } else {
+                logger.info("Agregada la Oferta ID: " + id);
                 res.send("Agregada la Oferta ID: " + id);
             }
         });
