@@ -32,7 +32,9 @@
             <ul class="nav navbar-nav navbar-right">
                 {% if usuario!=null %}
                 <li class="navbar-text"> {{usuario.email}}</li>
+                {% if usuario.role!="admin" %}
                 <li class="navbar-text">{{usuario.balance}} €</li>
+                {%endif%}
                 <li><a href="/desconectarse" class="nav-link"><span class="glyphicon glyphicon-log-out"></span> Cerrar
                     Sesión</a></li>
                 {% else %}

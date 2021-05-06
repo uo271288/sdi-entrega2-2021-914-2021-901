@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block titulo %} Lista de usuarios {% endblock %}
+
+{% block contenido_principal %}
+{%if mensaje != undefined && tipo != undefined%}
+<div class="{{tipo}}">{{mensaje}}</div>
+{%endif%}
+<h2>Usuarios de MyWallapop</h2>
+<div class="container white">
+    <hr>
+    <hr>
+    <form class="form-horizontal justify-content-center" method="post" action="/usuarios/eliminar">
+        <div class="table table-responsive">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th input="" type="checkbox" id="checkbox"></th>
+                    <th>Email</th>
+                    <th>Nombre</th>
+                    <th>Apellidos</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for usuarioStandard in usuarios %}
+                <tr>
+                    <td><input type="checkbox" name="usuariosEliminar" value={{ usuarioStandard.email }}></td>
+                    <td>{{usuarioStandard.email}}</td>
+                    <td>{{usuarioStandard.name}}</td>
+                    <td>{{usuarioStandard.lastName}}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="form-group">
+            <div>
+                <button id="botonS" type="submit" class="btn btn-primary">Eliminar</button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -36,6 +36,22 @@ module.exports = {
                 });
             }
         });
+    },eliminarUsuarios: function (criterio, funcionCallback) {
+        this.mongo.MongoClient.connect(this.app.get('db'), function (err, db) {
+            if (err) {
+                funcionCallback(null);
+            } else {
+                let collection = db.collection('usuarios');
+                collection.removeMany(criterio, function (err, result) {
+                    if (err) {
+                        funcionCallback(null);
+                    } else {
+                        funcionCallback(result);
+                    }
+                    db.close();
+                });
+            }
+        });
     },
     insertarCompra: function (compra, funcionCallback) {
         this.mongo.MongoClient.connect(this.app.get('db'), function (err, db) {

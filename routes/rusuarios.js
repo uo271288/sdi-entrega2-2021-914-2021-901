@@ -1,6 +1,54 @@
 module.exports = function (app, swig, gestorBD, logger) {
     app.get("/usuarios", function (req, res) {
-        res.send("ver usuarios");
+        let criterio = {email: {$ne: "admin@email.com"}};
+        gestorBD.obtenerUsuarios(criterio, function (usuarios) {
+            if (typeof (req.session.errores) != "undefined") {
+                let respuesta = swig.renderFile('views/usuarios.html', {
+                    mensaje: req.session.errores.mensaje,
+                    tipo: req.session.errores.tipo,
+                    usuarios: usuarios,
+                    usuario: req.session.usuario
+                });
+                delete req.session.errores;
+                res.send(respuesta);
+            } else {
+                let respuesta = swig.renderFile('views/usuarios.html', {
+                    usuarios: usuarios,
+                    usuario: req.session.usuario
+                });
+                logger.info("Admin ha accedido a la lista de usuarios del sistema");
+                res.send(respuesta);
+            }
+        });
+    });
+
+    app.post('/usuarios/eliminar', function (req, res) {
+        let criterio;
+        let usuarios = req.body.usuariosEliminar;
+        console.log(usuarios);
+        if (typeof (usuarios) != 'undefined') {
+            if (typeof (usuarios) == "string") {
+                criterio = {email: usuarios};
+            } else {
+                criterio = {email: {$in: usuarios}};
+            }
+            gestorBD.eliminarUsuarios(criterio, function (result) {
+                if (result == null) {
+                    logger.error("Error al eliminar usuarios");
+                    res.send("Error al eliminar usuarios");
+                } else {
+                    logger.info("Se han eliminado los usuarios " + usuarios + " correctamente");
+                    res.redirect("/usuarios");
+                }
+            });
+        } else {
+            logger.error("No se han seleccionado usuarios para eliminar");
+            req.session.errores = {
+                mensaje: "Seleccione al menos un usuario para eliminar.",
+                tipo: "alert alert-danger"
+            }
+            res.redirect("/usuarios");
+        }
     });
 
     app.get("/registrarse", function (req, res) {
@@ -58,7 +106,7 @@ module.exports = function (app, swig, gestorBD, logger) {
                         } else {
                             req.session.errores = {
                                 mensaje: "Nuevo usuario registrado",
-                                tipo: "alert alert-info"
+                                tipo: "alert alert-success"
                             }
                             logger.info("Usuario " + usuario.email + " registrado");
                             res.redirect("/registrarse");
@@ -101,8 +149,13 @@ module.exports = function (app, swig, gestorBD, logger) {
                 res.redirect("/identificarse");
             } else {
                 req.session.usuario = usuarios[0];
-                logger.info("El usuario " + usuarios[0].email + " ha iniciado sesión");
-                res.redirect("/ofertas");
+                if (usuarios[0].role == "admin") {
+                    logger.info("El administrador ha iniciado sesión");
+                    res.redirect("/usuarios");
+                } else {
+                    logger.info("El usuario " + usuarios[0].email + " ha iniciado sesión");
+                    res.redirect("/ofertas");
+                }
             }
         });
     });
