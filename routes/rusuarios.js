@@ -1,5 +1,5 @@
 /**
- *
+ * Módulo que gestiona las rutas de la entidad usuario
  *
  * @param app
  * @param swig
@@ -76,7 +76,7 @@ module.exports = function (app, swig, gestorBD, logger) {
     app.post('/registrarse', function (req, res) {
         let criterio = {email: req.body.email};
         gestorBD.obtenerUsuarios(criterio, function (usuarios) {
-            if (usuarios.length != 0) {
+            if (usuarios.length !== 0) {
                 logger.error("Error de registro. El usuario " + req.body.email + " ya está registrado");
                 req.session.errores = {
                     mensaje: "El usuario ya está registrado.",
@@ -84,7 +84,7 @@ module.exports = function (app, swig, gestorBD, logger) {
                 }
                 res.redirect("/registrarse");
             } else {
-                if (req.body.passwordRepeat != req.body.password) {
+                if (req.body.passwordRepeat !== req.body.password) {
                     req.session.errores = {
                         mensaje: "Las contraseñas no coinciden.",
                         tipo: "alert alert-danger"
@@ -147,7 +147,7 @@ module.exports = function (app, swig, gestorBD, logger) {
             password: seguro
         }
         gestorBD.obtenerUsuarios(criterio, function (usuarios) {
-            if (usuarios == null || usuarios.length == 0) {
+            if (usuarios == null || usuarios.length === 0) {
                 req.session.usuario = null;
                 req.session.errores = {
                     mensaje: "Email o password incorrecto",
@@ -157,7 +157,7 @@ module.exports = function (app, swig, gestorBD, logger) {
                 res.redirect("/identificarse");
             } else {
                 req.session.usuario = usuarios[0];
-                if (usuarios[0].role == "admin") {
+                if (usuarios[0].role === "admin") {
                     logger.info("El administrador ha iniciado sesión");
                     res.redirect("/usuarios");
                 } else {
