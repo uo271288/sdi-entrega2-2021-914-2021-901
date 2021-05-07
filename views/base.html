@@ -11,9 +11,7 @@
 </head>
 <body>
 
-{%if mensaje != undefined && tipo != undefined%}
-<div class="{{tipo}}">{{mensaje}}</div>
-{%endif%}
+
 
 <!-- Barra de Navegación superior -->
 <nav class="navbar navbar-inverse">
@@ -48,9 +46,11 @@
         </div>
     </div>
 </nav>
+{%if mensaje != undefined && tipo != undefined%}
+<div class="{{tipo}}">{{mensaje}}</div>
+{%endif%}
 
-
-<div class="container">
+<!--<div class="container">
     <script>
         var mensaje = getUrlParameter('mensaje');
         var tipoMensaje = getUrlParameter('tipoMensaje');
@@ -73,6 +73,7 @@
                 decodeURIComponent(results[1].replace(/\+/g, ' '));
         };
     </script>
+    -->
     <!-- Contenido -->
     {% block contenido_principal %}
     <!-- Posible contenido por defecto -->

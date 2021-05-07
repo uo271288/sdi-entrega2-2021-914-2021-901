@@ -8,12 +8,12 @@
 			<div
 					class="input-group col-xs-8 col-sm-6 col-md-4 col-lg-5 pull-right">
 				<input type="text" class="search-query form-control"
-					   placeholder="Título de la oferta" name="busqueda"/>
+					   placeholder="Titulo de la oferta" name="busqueda"/>
 				<span class="input-group-btn">
-<button class="btn" type="submit">
-<span class="glyphicon glyphicon-search"></span>
-</button>
-</span>
+					<button class="btn" type="submit">
+					<span class="glyphicon glyphicon-search"></span>
+					</button>
+				</span>
 			</div>
 		</form>
 	</div>
@@ -57,9 +57,14 @@
 <div class="row text-center">
 	<ul class="pagination">
 		{% for pagina in paginas %}
-		<li class="page-item" id = "pi-{{pagina}}">
-			<a class="page-link" href="/ofertas?pg={{pagina}}">{{pagina}}</a>
-		</li>
+
+			<li class="page-item" id = "pi-{{pagina}}">
+				{% if (busqueda == null)%}
+				<a class="page-link" href="/ofertas?pg={{pagina}}">{{pagina}}</a>
+				{% else %}
+				<a class="page-link" href="/ofertas?pg={{pagina}}&busqueda={{busqueda}}">{{pagina}}</a>
+				{% endif %}
+			</li>
 		{% endfor %}
 		<script>
 			$("#pi-" + "{{actual}}").addClass("active");
