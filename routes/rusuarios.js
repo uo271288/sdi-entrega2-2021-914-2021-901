@@ -1,3 +1,11 @@
+/**
+ *
+ *
+ * @param app
+ * @param swig
+ * @param gestorBD
+ * @param logger
+ */
 module.exports = function (app, swig, gestorBD, logger) {
     app.get("/usuarios", function (req, res) {
         let criterio = {email: {$ne: "admin@email.com"}};

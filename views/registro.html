@@ -3,9 +3,6 @@
 {% block titulo %} Registrar usuario {% endblock %}
 
 {% block contenido_principal %}
-{%if mensaje != undefined && tipo != undefined%}
-<div class="{{tipo}}">{{mensaje}}</div>
-{%endif%}
 <h2>Registrar usuario</h2>
 <form class="form-horizontal" method="post" action="/registrarse">
     <div class="form-group">
