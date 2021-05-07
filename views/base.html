@@ -11,6 +11,9 @@
 </head>
 <body>
 
+{%if mensaje != undefined && tipo != undefined%}
+<div class="{{tipo}}">{{mensaje}}</div>
+{%endif%}
 
 <!-- Barra de Navegación superior -->
 <nav class="navbar navbar-inverse">
