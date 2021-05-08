@@ -19,12 +19,12 @@ gestorBD.init(app, mongo);
 // routerUsuarioSession
 var routerUsuarioSession = express.Router();
 routerUsuarioSession.use(function(req, res, next) {
-    console.log("routerUsuarioSession");
-    if ( req.session.usuario ) {
+    logger.info("routerUsuarioSession");
+    if ( req.session.usuario && req.session.usuario.role === "standard") {
         // dejamos correr la petición
         next();
     } else {
-        console.log("va a : "+req.session.destino)
+        logger.info("va a : "+req.session.destino)
         res.redirect("/identificarse");
     }
 });
@@ -37,23 +37,67 @@ app.use("/compras",routerUsuarioSession);
 //routerUsuarioAutor
 let routerUsuarioAutor = express.Router();
 routerUsuarioAutor.use(function(req, res, next) {
-    console.log("routerUsuarioAutor");
+    logger.info("routerUsuarioAutor");
     let path = require('path');
     let id = path.basename(req.originalUrl);
 // Cuidado porque req.params no funciona
 // en el router si los params van en la URL.
     gestorBD.obtenerOfertas(
         {_id: mongo.ObjectID(id) }, function (ofertas) {
-            console.log(ofertas[0]);
-            if(ofertas[0].autor == req.session.usuario ){
-                next();
-            } else {
-                res.redirect("/ofertas");
+            logger.info(ofertas[0]);
+            if (ofertas[0] == null) {
+                logger.error("Error 404: La oferta " + id  + " no esta disponible o no existe")
+                let respuesta = swig.renderFile('views/error.html',
+                    {
+                        numeroError: 404,
+                        mensaje: "La oferta " + id  + " no esta disponible o no existe"
+                    });
+                res.send(respuesta);
+            }
+            else
+            {
+                if (ofertas[0].autor._id === req.session.usuario._id) {
+                    next();
+                } else {
+                    res.redirect("/ofertas");
+                }
             }
         })
 });
 //Aplicar routerUsuarioAutor
 app.use("/ofertas/eliminar",routerUsuarioAutor);
+
+let routerUsuarioNoAutor = express.Router();
+routerUsuarioNoAutor.use(function(req, res, next) {
+    logger.info("routerUsuarioNoAutor");
+    let path = require('path');
+    let id = path.basename(req.originalUrl);
+// Cuidado porque req.params no funciona
+// en el router si los params van en la URL.
+    gestorBD.obtenerOfertas(
+        {_id: mongo.ObjectID(id) }, function (ofertas) {
+            logger.info(ofertas[0]);
+            if (ofertas[0] == null) {
+                logger.error("Error 404: La oferta " + id  + " no esta disponible o no existe")
+                let respuesta = swig.renderFile('views/error.html',
+                    {
+                        numeroError: 404,
+                        mensaje: "La oferta " + id  + " no esta disponible o no existe"
+                    });
+                res.send(respuesta);
+            }
+            else
+            {
+                if (ofertas[0].autor._id != req.session.usuario._id) {
+                    next();
+                } else {
+                    res.redirect("/ofertas");
+                }
+            }
+        })
+});
+//Aplicar routerUsuarioAutor
+app.use("/ofertas/comprar",routerUsuarioNoAutor);
 
 let logger = require("./modules/logger.js");
 
@@ -69,6 +113,18 @@ require("./routes/rofertas.js")(app, swig, gestorBD, logger); // (app, param1, p
 app.get('/', function (req, res) {
     res.redirect('/tienda');
 })
+
+app.use(function(err,req,res, next){
+    console.log("Error producido: " + err);
+    if(!res.headersSent){
+        let respuesta = swig.renderFile('views/error.html',
+            {
+                numeroError: 400,
+                mensaje: "Recurso no disponible"
+            });
+        res.send(respuesta);
+    }
+});
 
 app.listen(app.get('port'), function () {
     logger.info('Servidor activo');

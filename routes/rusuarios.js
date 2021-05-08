@@ -136,7 +136,8 @@ module.exports = function (app, swig, gestorBD, logger) {
             delete req.session.errores;
         } else
             respuesta = swig.renderFile('views/identificacion.html', {});
-        res.send(respuesta);
+            res.send(respuesta);
+
     });
 
     app.post("/identificarse", function (req, res) {

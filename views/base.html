@@ -45,12 +45,12 @@
         </div>
     </div>
 </nav>
-{%if mensaje != undefined && tipo != undefined%}
-<div class="{{tipo}}">{{mensaje}}</div>
-{%endif%}
 
-<!--<div class="container">
-    <script>
+<div class="container">
+    {%if mensaje != undefined && tipo != undefined%}
+    <div class="{{tipo}}">{{mensaje}}</div>
+    {%endif%}
+    <!--<script>
         var mensaje = getUrlParameter('mensaje');
         var tipoMensaje = getUrlParameter('tipoMensaje');
         // Otra forma de recuperar los parametros de la url pero no compatible con IE
