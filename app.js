@@ -142,6 +142,7 @@ app.set('db', 'mongodb://admin:sdi@tiendamusica-shard-00-00.r7syo.mongodb.net:27
 //Rutas/controladores por lógica
 require("./routes/rusuarios.js")(app, swig, gestorBD, logger); // (app, param1, param2, etc.)
 require("./routes/rofertas.js")(app, swig, gestorBD, logger); // (app, param1, param2, etc.)
+require("./routes/rapiofertas.js")(app, gestorBD, logger); // (app, param1, param2, etc.)
 
 app.get('/', function (req, res) {
     res.redirect('/ofertas');
