@@ -212,5 +212,39 @@ module.exports = {
                 });
             }
         });
+    },
+    insertarConversacion: function (mensaje, funcionCallback) {
+        this.mongo.MongoClient.connect(this.app.get('db'), function (err, db) {
+            if (err) {
+                funcionCallback(null);
+            } else {
+                let collection = db.collection('conversaciones');
+                collection.insertOne(mensaje, function (err, result) {
+                    if (err) {
+                        funcionCallback(null);
+                    } else {
+                        funcionCallback(result.ops[0]._id);
+                    }
+                    db.close();
+                });
+            }
+        });
+    },
+    obtenerConversacion: function (criterio, funcionCallback) {
+        this.mongo.MongoClient.connect(this.app.get('db'), function (err, db) {
+            if (err) {
+                funcionCallback(null);
+            } else {
+                let collection = db.collection('conversaciones');
+                collection.find(criterio).toArray(function (err, conversaciones) {
+                    if (err) {
+                        funcionCallback(null);
+                    } else {
+                        funcionCallback(conversaciones);
+                    }
+                    db.close();
+                });
+            }
+        });
     }
 };

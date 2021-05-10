@@ -43,7 +43,7 @@
                 "<td>" + ofertasMostrar[i].detalles + "</td>" +
                 "<td>" + ofertasMostrar[i].precio + "</td>" +
                 "<td>" +
-                "<a onclick=detalles('" + ofertasMostrar[i]._id + "')>Detalles</a><br>" +
+                "<a onclick=conversacion('" + ofertasMostrar[i]._id + "')>Conversacion</a><br>" +
                 "</td>" +
                 "</tr>");
             // Mucho cuidado con las comillas del eliminarCancion
@@ -53,8 +53,9 @@
 
     cargarOfertas();
 
-    function detalles(_id) {
+    function conversacion(_id) {
         idOfertaSeleccionada = _id;
+
         $("#contenedor-principal").load("widget-conversacion.html");
     }
 </script>
