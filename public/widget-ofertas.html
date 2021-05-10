@@ -1,5 +1,5 @@
-<div id="widget-ofertas" >
-    <button class="btn" onclick="cargarOfertas()" >Actualizar</button>
+<div id="widget-ofertas">
+    <button class="btn" onclick="cargarOfertas()">Actualizar</button>
     <table class="table table-hover">
         <thead>
         <tr>
@@ -16,41 +16,46 @@
 </div>
 <script>
     var ofertas;
-    function cargarOfertas(){
+
+    function cargarOfertas() {
         $.ajax({
             url: URLbase + "/oferta",
             type: "GET",
-            data: { },
+            data: {},
             dataType: 'json',
-            success: function(respuesta) {
+            headers: {"token": token},
+            success: function (respuesta) {
                 ofertas = respuesta;
                 actualizarTabla(ofertas);
             },
-            error : function (error){
-                $( "#contenedor-principal" ).load("widget-login.html");
+            error: function (error) {
+                $("#contenedor-principal").load("widget-login.html");
             }
         });
     }
-    function actualizarTabla(ofertasMostrar){
-        $( "#tablaCuerpo" ).empty(); // Vaciar la tabla
+
+    function actualizarTabla(ofertasMostrar) {
+        $("#tablaCuerpo").empty(); // Vaciar la tabla
         for (i = 0; i < ofertasMostrar.length; i++) {
-            $( "#tablaCuerpo" ).append(
-                "<tr id="+ofertasMostrar[i]._id+">"+
-                "<td>"+ofertasMostrar[i].titulo+"</td>" +
-                "<td>"+ofertasMostrar[i].detalles+"</td>" +
-                "<td>"+ofertasMostrar[i].precio+"</td>" +
-                "<td>"+
-                "<a onclick=detalles('"+ofertasMostrar[i]._id+"')>Detalles</a><br>"+
-                "</td>"+
-                "</tr>" );
+            $("#tablaCuerpo").append(
+                "<tr id=" + ofertasMostrar[i]._id + ">" +
+                "<td>" + ofertasMostrar[i].titulo + "</td>" +
+                "<td>" + ofertasMostrar[i].detalles + "</td>" +
+                "<td>" + ofertasMostrar[i].precio + "</td>" +
+                "<td>" +
+                "<a onclick=detalles('" + ofertasMostrar[i]._id + "')>Detalles</a><br>" +
+                "</td>" +
+                "</tr>");
             // Mucho cuidado con las comillas del eliminarCancion
             //la id tiene que ir entre comillas ' '
         }
     }
+
     cargarOfertas();
+
     function detalles(_id) {
         idOfertaSeleccionada = _id;
-        $( "#contenedor-principal" ).load( "widget-conversacion.html");
+        $("#contenedor-principal").load("widget-conversacion.html");
     }
 </script>
 

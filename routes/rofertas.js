@@ -1,6 +1,6 @@
 module.exports = function(app, swig,gestorBD, logger) {
     app.get("/ofertas", function(req, res) {
-        let criterio = {};
+        let criterio = {"autor.email": {$ne: req.session.usuario.email}};
         if( req.query.busqueda != null ){
             req.session.busqueda = req.query.busqueda;
             criterio = { "titulo" : {$regex : ".*"+req.session.busqueda.toLowerCase()+".*"}  };
