@@ -3,7 +3,7 @@ module.exports = function(app, swig,gestorBD, logger) {
         let criterio = {};
         if( req.query.busqueda != null ){
             req.session.busqueda = req.query.busqueda;
-            criterio = { "titulo" : {$regex : ".*"+req.session.busqueda+".*"}  };
+            criterio = { "titulo" : {$regex : ".*"+req.session.busqueda.toLowerCase()+".*"}  };
         }
         let pg = parseInt(req.query.pg); // Es String !!!
         if ( req.query.pg == null){
@@ -181,7 +181,7 @@ module.exports = function(app, swig,gestorBD, logger) {
     app.post("/oferta", function(req, res) {
 
         let oferta = {
-            titulo : req.body.titulo,
+            titulo : req.body.titulo.toLowerCase(),
             detalles : req.body.detalles,
             precio : req.body.precio,
             autor: req.session.usuario,

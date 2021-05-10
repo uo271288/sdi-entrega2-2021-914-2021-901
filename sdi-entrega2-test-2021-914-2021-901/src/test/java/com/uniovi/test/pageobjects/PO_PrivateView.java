@@ -13,15 +13,15 @@ public class PO_PrivateView extends PO_NavView {
 	// Esperamos 5 segundo a que carge el DOM porque en algunos equipos falla
 	SeleniumUtils.esperarSegundos(driver, 5);
 	// Rellenemos el campo de titulo
-	WebElement title = driver.findElement(By.name("title"));
+	WebElement title = driver.findElement(By.name("titulo"));
 	title.clear();
 	title.sendKeys(titulop);
 	// Rellenamos el campo de descripcion
-	WebElement description = driver.findElement(By.name("description"));
+	WebElement description = driver.findElement(By.name("detalles"));
 	description.clear();
 	description.sendKeys(descriptionp);
 	// Rellenamos el campo de precio
-	WebElement price = driver.findElement(By.name("price"));
+	WebElement price = driver.findElement(By.name("precio"));
 	price.click();
 	price.clear();
 	price.sendKeys(pricep);
@@ -33,7 +33,7 @@ public class PO_PrivateView extends PO_NavView {
 	// Esperamos 5 segundo a que carge el DOM porque en algunos equipos falla
 	SeleniumUtils.esperarSegundos(driver, 5);
 	// Rellenemos el campo search
-	WebElement title = driver.findElement(By.name("searchText"));
+	WebElement title = driver.findElement(By.name("busqueda"));
 	title.clear();
 	title.sendKeys(searchp);
 	By boton = By.className("btn");

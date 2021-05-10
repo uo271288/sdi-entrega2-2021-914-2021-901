@@ -21,8 +21,8 @@
         <div class="collapse navbar-collapse" id="myNavbar">
             {% if usuario!=null && usuario.role!="admin" %}
             <ul class="nav navbar-nav">
-                <li id="mTienda"><a href="/ofertas">Ofertas</a></li>
-                <li id="mPublicaciones"><a href="/ofertas/misofertas">Mis Ofertas</a></li>
+                <li id="mOfertas" class="active"><a href="/ofertas">Ofertas</a></li>
+                <li id="mMisOfertas"><a href="/ofertas/misofertas">Mis Ofertas</a></li>
                 <li id="mCompras"><a href="/compras">Compras</a></li>
             </ul>
             {%endif%}
