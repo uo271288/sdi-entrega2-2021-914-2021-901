@@ -16,46 +16,81 @@ app.set('crypto', crypto);
 let gestorBD = require("./modules/gestorBD.js");
 gestorBD.init(app, mongo);
 
-// routerUsuarioSession
-var routerUsuarioSession = express.Router();
-routerUsuarioSession.use(function(req, res, next) {
-    logger.info("routerUsuarioSession");
-    if ( req.session.usuario && req.session.usuario.role === "standard") {
+let routerUsuarioLoggeado = express.Router();
+routerUsuarioLoggeado.use(function (req, res, next) {
+    logger.info("routerUsuarioLoggeado");
+    if (!req.session.usuario) {
         // dejamos correr la petición
         next();
     } else {
-        logger.info("va a : "+req.session.destino)
+        res.redirect("/ofertas")
+    }
+});
+//Aplicar routerUsuariosNoAdmin
+app.use("/identificarse", routerUsuarioLoggeado);
+app.use("/registrarse", routerUsuarioLoggeado);
+
+/**
+ * Router para impedir que usuarios no admin accedan a la lista de usuarios
+ *
+ * @type {Router}
+ */
+let routerUsuariosNoAdmin = express.Router();
+routerUsuariosNoAdmin.use(function (req, res, next) {
+    logger.info("routerUsuariosNoAdmin");
+    if (req.session.usuario && req.session.usuario.role === "admin") {
+        // dejamos correr la petición
+        next();
+    } else {
+        res.redirect("/ofertas");
+    }
+});
+//Aplicar routerUsuariosNoAdmin
+app.use("/usuarios*", routerUsuariosNoAdmin);
+
+// routerUsuarioSession
+var routerUsuarioSession = express.Router();
+routerUsuarioSession.use(function (req, res, next) {
+    logger.info("routerUsuarioSession");
+    if (req.session.usuario) {
+        if (req.session.usuario.role === "standard") {
+            // dejamos correr la petición
+            next();
+        }
+        if (req.session.usuario.role === "admin") {
+            res.redirect("/usuarios");
+        }
+    } else {
+        logger.info("va a : " + req.session.destino)
         res.redirect("/identificarse");
     }
 });
 //Aplicar routerUsuarioSession
-app.use("/ofertas",routerUsuarioSession);
-app.use("/ofertas/agregar",routerUsuarioSession);
-app.use("/ofertas/misofertas",routerUsuarioSession);
-app.use("/compras",routerUsuarioSession);
+app.use("/ofertas", routerUsuarioSession);
+app.use("/ofertas/agregar", routerUsuarioSession);
+app.use("/ofertas/misofertas", routerUsuarioSession);
+app.use("/compras", routerUsuarioSession);
 
 //routerUsuarioAutor
 let routerUsuarioAutor = express.Router();
-routerUsuarioAutor.use(function(req, res, next) {
+routerUsuarioAutor.use(function (req, res, next) {
     logger.info("routerUsuarioAutor");
     let path = require('path');
     let id = path.basename(req.originalUrl);
 // Cuidado porque req.params no funciona
 // en el router si los params van en la URL.
     gestorBD.obtenerOfertas(
-        {_id: mongo.ObjectID(id) }, function (ofertas) {
+        {_id: mongo.ObjectID(id)}, function (ofertas) {
             logger.info(ofertas[0]);
             if (ofertas[0] == null) {
-                logger.error("Error 404: La oferta " + id  + " no esta disponible o no existe")
+                logger.error("Error 404: La oferta " + id + " no esta disponible o no existe")
                 let respuesta = swig.renderFile('views/error.html',
                     {
                         numeroError: 404,
-                        mensaje: "La oferta " + id  + " no esta disponible o no existe"
+                        mensaje: "La oferta " + id + " no esta disponible o no existe"
                     });
                 res.send(respuesta);
-            }
-            else
-            {
+            } else {
                 if (ofertas[0].autor._id === req.session.usuario._id) {
                     next();
                 } else {
@@ -65,30 +100,28 @@ routerUsuarioAutor.use(function(req, res, next) {
         })
 });
 //Aplicar routerUsuarioAutor
-app.use("/ofertas/eliminar",routerUsuarioAutor);
+app.use("/ofertas/eliminar", routerUsuarioAutor);
 
 let routerUsuarioNoAutor = express.Router();
-routerUsuarioNoAutor.use(function(req, res, next) {
+routerUsuarioNoAutor.use(function (req, res, next) {
     logger.info("routerUsuarioNoAutor");
     let path = require('path');
     let id = path.basename(req.originalUrl);
 // Cuidado porque req.params no funciona
 // en el router si los params van en la URL.
     gestorBD.obtenerOfertas(
-        {_id: mongo.ObjectID(id) }, function (ofertas) {
+        {_id: mongo.ObjectID(id)}, function (ofertas) {
             logger.info(ofertas[0]);
             if (ofertas[0] == null) {
-                logger.error("Error 404: La oferta " + id  + " no esta disponible o no existe")
+                logger.error("Error 404: La oferta " + id + " no esta disponible o no existe")
                 let respuesta = swig.renderFile('views/error.html',
                     {
                         numeroError: 404,
-                        mensaje: "La oferta " + id  + " no esta disponible o no existe"
+                        mensaje: "La oferta " + id + " no esta disponible o no existe"
                     });
                 res.send(respuesta);
-            }
-            else
-            {
-                if (ofertas[0].autor._id != req.session.usuario._id) {
+            } else {
+                if (ofertas[0].autor._id !== req.session.usuario._id) {
                     next();
                 } else {
                     res.redirect("/ofertas");
@@ -97,7 +130,7 @@ routerUsuarioNoAutor.use(function(req, res, next) {
         })
 });
 //Aplicar routerUsuarioAutor
-app.use("/ofertas/comprar",routerUsuarioNoAutor);
+app.use("/ofertas/comprar", routerUsuarioNoAutor);
 
 let logger = require("./modules/logger.js");
 
@@ -111,12 +144,12 @@ require("./routes/rusuarios.js")(app, swig, gestorBD, logger); // (app, param1, 
 require("./routes/rofertas.js")(app, swig, gestorBD, logger); // (app, param1, param2, etc.)
 
 app.get('/', function (req, res) {
-    res.redirect('/tienda');
+    res.redirect('/ofertas');
 })
 
-app.use(function(err,req,res, next){
+app.use(function (err, req, res, next) {
     console.log("Error producido: " + err);
-    if(!res.headersSent){
+    if (!res.headersSent) {
         let respuesta = swig.renderFile('views/error.html',
             {
                 numeroError: 400,

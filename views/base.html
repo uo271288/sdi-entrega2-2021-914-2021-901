@@ -16,19 +16,16 @@
 <nav class="navbar navbar-inverse">
     <div class="container-fluid">
         <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
             <img src="/img/logo.png" alt="logo"/>
         </div>
         <div class="collapse navbar-collapse" id="myNavbar">
+            {% if usuario!=null && usuario.role!="admin" %}
             <ul class="nav navbar-nav">
-                <li id="mTienda" class="active"><a href="/ofertas">Ofertas</a></li>
+                <li id="mTienda"><a href="/ofertas">Ofertas</a></li>
                 <li id="mPublicaciones"><a href="/ofertas/misofertas">Mis Ofertas</a></li>
                 <li id="mCompras"><a href="/compras">Compras</a></li>
             </ul>
+            {%endif%}
             <ul class="nav navbar-nav navbar-right">
                 {% if usuario!=null %}
                 <li class="navbar-text"> {{usuario.email}}</li>

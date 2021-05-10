@@ -4,7 +4,14 @@ module.exports = {
     init: function (app, mongo) {
         this.mongo = mongo;
         this.app = app;
-    }, insertarUsuario: function (usuario, funcionCallback) {
+    },
+    /**
+     * Permite insertar un usuario en la BBDD
+     *
+     * @param usuario
+     * @param funcionCallback
+     */
+    insertarUsuario: function (usuario, funcionCallback) {
         this.mongo.MongoClient.connect(this.app.get('db'), function (err, db) {
             if (err) {
                 funcionCallback(null);
@@ -20,7 +27,14 @@ module.exports = {
                 });
             }
         });
-    }, obtenerUsuarios: function (criterio, funcionCallback) {
+    },
+    /**
+     * Permite obtener usuarios de la BBDD
+     *
+     * @param criterio Parámetro de búsqueda
+     * @param funcionCallback
+     */
+    obtenerUsuarios: function (criterio, funcionCallback) {
         this.mongo.MongoClient.connect(this.app.get('db'), function (err, db) {
             if (err) {
                 funcionCallback(null);
@@ -36,7 +50,14 @@ module.exports = {
                 });
             }
         });
-    },eliminarUsuarios: function (criterio, funcionCallback) {
+    },
+    /**
+     * Permite borrar usuarios de la BDDD
+     *
+     * @param criterio Usuarios a borrar
+     * @param funcionCallback
+     */
+    eliminarUsuarios: function (criterio, funcionCallback) {
         this.mongo.MongoClient.connect(this.app.get('db'), function (err, db) {
             if (err) {
                 funcionCallback(null);
@@ -121,13 +142,13 @@ module.exports = {
             }
         });
     },
-    eliminarOferta : function(criterio, funcionCallback) {
-        this.mongo.MongoClient.connect(this.app.get('db'), function(err, db) {
+    eliminarOferta: function (criterio, funcionCallback) {
+        this.mongo.MongoClient.connect(this.app.get('db'), function (err, db) {
             if (err) {
                 funcionCallback(null);
             } else {
                 let collection = db.collection('ofertas');
-                collection.remove(criterio, function(err, result) {
+                collection.remove(criterio, function (err, result) {
                     if (err) {
                         funcionCallback(null);
                     } else {
@@ -172,15 +193,15 @@ module.exports = {
             }
         });
     },
-    obtenerOfertasPg : function(criterio,pg,funcionCallback){
-        this.mongo.MongoClient.connect(this.app.get('db'), function(err, db) {
+    obtenerOfertasPg: function (criterio, pg, funcionCallback) {
+        this.mongo.MongoClient.connect(this.app.get('db'), function (err, db) {
             if (err) {
                 funcionCallback(null);
             } else {
                 let collection = db.collection('ofertas');
-                collection.find(criterio).count(function(err, count){
-                    collection.find(criterio).skip( (pg-1)*5 ).limit( 5 )
-                        .toArray(function(err, ofertas) {
+                collection.find(criterio).count(function (err, count) {
+                    collection.find(criterio).skip((pg - 1) * 5).limit(5)
+                        .toArray(function (err, ofertas) {
                             if (err) {
                                 funcionCallback(null);
                             } else {
