@@ -55,6 +55,8 @@ module.exports = function(app, gestorBD,logger) {
                             error : "se ha producido un error"
                         })
                     } else {
+                        logger.info(usuarios[0]._id.toString());
+                        logger.info("oferta:" + req.params.id.toString());
                         criterio = {$or: [
                                 {
                                     propietario : usuarios[0]._id.toString(),
@@ -64,7 +66,6 @@ module.exports = function(app, gestorBD,logger) {
                                     oferta : req.params.id.toString()
                                 }
                             ]
-
                         };
                         gestorBD.obtenerConversacion(criterio, function(conversacion) {
                             if (conversacion == null) {
@@ -103,7 +104,16 @@ module.exports = function(app, gestorBD,logger) {
                         })
                     } else {
                         logger.info(req.body.idOferta);
-                        criterio = {"oferta": req.body.idOferta};
+                        criterio = {$or: [
+                                {
+                                    propietario : usuarios[0]._id.toString(),
+                                    oferta : req.body.idOferta
+                                },{
+                                    interesado : usuarios[0]._id.toString(),
+                                    oferta : req.body.idOferta
+                                }
+                            ]
+                        };
                         gestorBD.obtenerConversacion(criterio, function(conversacion) {
                             if (conversacion == null) {
                                 res.status(500);
