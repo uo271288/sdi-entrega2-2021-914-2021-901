@@ -6,6 +6,7 @@
             <th>Titulo</th>
             <th>Detalles</th>
             <th>Precio</th>
+            <th>Vendedor</th>
             <th class="col-md-1"></th>
         </tr>
         </thead>
@@ -43,6 +44,7 @@
                 "<td>" + ofertasMostrar[i].titulo + "</td>" +
                 "<td>" + ofertasMostrar[i].detalles + "</td>" +
                 "<td>" + ofertasMostrar[i].precio + "</td>" +
+                "<td>" + ofertasMostrar[i].autor.email + "</td>" +
                 "<td>" +
                 "<a onclick=conversacion('" + ofertasMostrar[i]._id + "')>Conversacion</a><br>" +
                 "</td>" +
