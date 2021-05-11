@@ -1,5 +1,5 @@
 <div id="widget-conversacion">
-    <div class = "form-group" id="conversacion">
+    <div id="conversacion">
 
     </div>
     <div class="form-group">
@@ -16,31 +16,40 @@
 
 <script>
     var mensajes;
-
-    $.ajax({
-        url : URLbase + "/conversacion/" + idOfertaSeleccionada ,
-        type : "GET",
-        data : {},
-        dataType : 'json',
-        headers : {
-            "token" : token
-        },
-        success: function (respuesta) {
-            mensajes = respuesta;
-            actualizarConversacion(mensajes);
-        },
-        error : function(error) {
-            $( "#contenedor-principal" ).load("widget-login.html");
-        }
-    });
+    function cargarConversacion() {
+        $.ajax({
+            url: URLbase + "/conversacion/" + idOfertaSeleccionada,
+            type: "GET",
+            data: {},
+            dataType: 'json',
+            headers: {
+                "token": token
+            },
+            success: function (respuesta) {
+                mensajes = respuesta;
+                actualizarConversacion(mensajes);
+            },
+            error: function (error) {
+                $("#contenedor-principal").load("widget-login.html");
+            }
+        });
+    }
 
     function actualizarConversacion(mensajesMostrar) {
         $("#conversacion").empty(); // Vaciar la tabla
-        for (i = 0; i < mensajesMostrar[0].mensajes.length; i++) {
+        for (i = 0; i < mensajesMostrar.length; i++) {
             $("#conversacion").append(
-                "<div id=" + mensajesMostrar[0].mensajes[i]._id + ">" +
-                "<td>" + mensajesMostrar[0].mensajes[i].mensaje + "</td>" +
-                "</div>");
+                "<div class='left clearfix' id = " +  mensajesMostrar[i]._id + ">" +
+                    "<div className='chat-body'>" +
+                        "<div className='header'>" +
+                            "<b>" + mensajesMostrar[i].mensaje.autor + "</b>"+
+                        "</div>"+
+                        "<p>"+
+                            mensajesMostrar[i].mensaje.mensaje+
+                        "</p>"+
+                    "</div>"+
+                "</div>"
+                );
             // Mucho cuidado con las comillas del eliminarCancion
             //la id tiene que ir entre comillas ' '
         }
@@ -58,12 +67,15 @@
             headers: {"token": token},
             success: function (respuesta) {
                 console.log(respuesta);
-                $("#contenedor-principal").load("widget-conversacion.html");
-
+                $("#mensaje").empty()
             },
             error: function (error) {
                 $("#contenedor-principal").load("widget-login.html");
             }
         });
     }
+
+    setInterval(function() {
+        cargarConversacion();
+    }, 1000);
 </script>

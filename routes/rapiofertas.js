@@ -39,7 +39,7 @@ module.exports = function(app, gestorBD,logger) {
     });
 
     app.get("/api/conversacion/:id", function(req, res) {
-        let criterio = {"autor.email": {$ne: res.usuario}};
+        let criterio = {"email": res.usuario};
         gestorBD.obtenerUsuarios(criterio, function (usuarios) {
             if (usuarios == null || usuarios.length == 0) {
                 res.status(500);
@@ -55,18 +55,26 @@ module.exports = function(app, gestorBD,logger) {
                             error : "se ha producido un error"
                         })
                     } else {
-                        criterio = {oferta : gestorBD.mongo.ObjectID(req.params.id)
+                        criterio = {$or: [
+                                {
+                                    propietario : usuarios[0]._id.toString(),
+                                    oferta : req.params.id.toString()
+                                },{
+                                    interesado : usuarios[0]._id.toString(),
+                                    oferta : req.params.id.toString()
+                                }
+                            ]
+
                         };
                         gestorBD.obtenerConversacion(criterio, function(conversacion) {
-                            if (ofertas == null) {
+                            if (conversacion == null) {
                                 res.status(500);
                                 res.json({
                                     error : "se ha producido un error"
                                 })
                             } else {
-                                logger.info(conversacion.length);
-                                logger.info(conversacion[0].mensajes[0].mensaje);
                                 res.status(200);
+                                logger.info(conversacion.length);
                                 res.send( JSON.stringify(conversacion) );
                             }
                         });
@@ -78,7 +86,7 @@ module.exports = function(app, gestorBD,logger) {
     });
 
     app.post("/api/conversacion", function(req, res) {
-        let criterio = {"autor.email": {$ne: res.usuario}};
+        let criterio = {"email": res.usuario};
         gestorBD.obtenerUsuarios(criterio, function (usuarios) {
             if (usuarios == null || usuarios.length == 0) {
                 res.status(500);
@@ -94,33 +102,89 @@ module.exports = function(app, gestorBD,logger) {
                             error : "se ha producido un error"
                         })
                     } else {
-                        logger.info(gestorBD.mongo.ObjectID(req.body.idOferta));
-                        let conversacion = {
-                            propietario : gestorBD.mongo.ObjectID(ofertas[0].autor._id),
-                            interesado : usuarios[0]._id,
-                            oferta: gestorBD.mongo.ObjectID(req.body.idOferta),
-                            mensajes: [
-                                {
-                                    autor: usuarios[0]._id,
-                                    hora: new Date(Date.now()),
-                                    mensaje: req.body.mensaje
-                                }
-                            ]
-                        };
-                        gestorBD.insertarConversacion(conversacion ,function(idConversacion) {
-                            if (idConversacion == null) {
+                        logger.info(req.body.idOferta);
+                        criterio = {"oferta": req.body.idOferta};
+                        gestorBD.obtenerConversacion(criterio, function(conversacion) {
+                            if (conversacion == null) {
                                 res.status(500);
                                 res.json({
-                                    error: "se ha producido un error"
+                                    error : "se ha producido un error"
                                 })
                             } else {
-                                res.status(201);
-                                res.json({
-                                    mensaje: "conversacion insertada",
-                                    _id: idConversacion
-                                })
+
+                                if(conversacion.length>0){
+                                    let conversacionNueva = {
+                                        propietario : conversacion[0].propietario,
+                                        interesado : conversacion[0].interesado,
+                                        oferta: req.body.idOferta,
+                                        mensaje:
+                                            {
+                                                autor: res.usuario,
+                                                hora: new Date(Date.now()),
+                                                mensaje: req.body.mensaje,
+                                                leido: false
+                                            }
+                                    };
+                                    gestorBD.insertarConversacion(conversacionNueva ,function(idConversacion) {
+                                        if (idConversacion == null) {
+                                            res.status(500);
+                                            logger.info("se ha producido un error");
+                                            res.json({
+                                                error: "se ha producido un error"
+                                            })
+                                        } else {
+                                            res.status(201);
+                                            logger.info("conversacion insertada");
+                                            res.json({
+                                                mensaje: "conversacion insertada",
+                                                _id: idConversacion
+                                            })
+                                        }
+                                    })
+                                }else {
+                                    logger.info(ofertas[0].autor._id);
+                                    logger.info(usuarios[0]._id.toString());
+
+                                    if(ofertas[0].autor._id !== usuarios[0]._id.toString()) {
+
+                                        let conversacionNueva = {
+                                            propietario: ofertas[0].autor._id,
+                                            interesado: usuarios[0]._id.toString(),
+                                            oferta: req.body.idOferta,
+                                            mensaje:
+                                                {
+                                                    autor: res.usuario,
+                                                    hora: new Date(Date.now()),
+                                                    mensaje: req.body.mensaje,
+                                                    leido: false
+                                                }
+                                        };
+                                        gestorBD.insertarConversacion(conversacionNueva, function (idConversacion) {
+                                            if (idConversacion == null) {
+                                                res.status(500);
+                                                logger.info("se ha producido un error");
+                                                res.json({
+                                                    error: "se ha producido un error"
+                                                })
+                                            } else {
+                                                res.status(201);
+                                                logger.info("conversacion insertada");
+                                                res.json({
+                                                    mensaje: "conversacion insertada",
+                                                    _id: idConversacion
+                                                })
+                                            }
+                                        })
+                                    }else{
+                                        res.status(500);
+                                        logger.info("El usuario que inicia la conversacion no puede ser el autor de la oferta");
+                                        res.json({
+                                            error: "El usuario que inicia la conversacion no puede ser el autor de la oferta"
+                                        })
+                                    }
+                                }
                             }
-                        })
+                        });
                     }
                 });
             }
