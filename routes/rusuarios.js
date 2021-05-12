@@ -3,8 +3,8 @@
  *
  * @param app
  * @param swig
- * @param gestorBD Gestor de la base de datos
- * @param logger Logger de la aplicación
+ * @param gestorBD
+ * @param logger
  */
 module.exports = function (app, swig, gestorBD, logger) {
 

@@ -20,7 +20,8 @@
                 <tbody>
                 {% for usuarioStandard in usuarios %}
                 <tr>
-                    <td><input id="checkbox" type="checkbox" name="usuariosEliminar" value={{ usuarioStandard.email }}></td>
+                    <td><input id="checkbox" type="checkbox" name="usuariosEliminar" value={{ usuarioStandard.email }}>
+                    </td>
                     <td>{{usuarioStandard.email}}</td>
                     <td>{{usuarioStandard.name}}</td>
                     <td>{{usuarioStandard.surname}}</td>

@@ -24,11 +24,11 @@
         };
     }
 }(function () {
-    function extend () {
+    function extend() {
         let i = 0;
         let result = {};
         for (; i < arguments.length; i++) {
-            let attributes = arguments[ i ];
+            let attributes = arguments[i];
             for (let key in attributes) {
                 result[key] = attributes[key];
             }
@@ -36,8 +36,8 @@
         return result;
     }
 
-    function init (converter) {
-        function api (key, value, attributes) {
+    function init(converter) {
+        function api(key, value, attributes) {
             let result;
             if (typeof document === 'undefined') {
                 return;
@@ -64,7 +64,8 @@
                     if (/^[\{\[]/.test(result)) {
                         value = result;
                     }
-                } catch (e) {}
+                } catch (e) {
+                }
 
                 if (!converter.write) {
                     value = encodeURIComponent(String(value))
@@ -122,7 +123,8 @@
                     if (this.json) {
                         try {
                             cookie = JSON.parse(cookie);
-                        } catch (e) {}
+                        } catch (e) {
+                        }
                     }
 
                     if (key === name) {
@@ -133,7 +135,8 @@
                     if (!key) {
                         result[name] = cookie;
                     }
-                } catch (e) {}
+                } catch (e) {
+                }
             }
 
             return result;
@@ -161,5 +164,6 @@
         return api;
     }
 
-    return init(function () {});
+    return init(function () {
+    });
 }));

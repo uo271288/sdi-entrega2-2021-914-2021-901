@@ -25,7 +25,7 @@ module.exports = createLogger({
         }),
         // Imprime en la consola el mensaje del logger
         new transports.Console({
-            format: format.colorize({all:true}) // Estabelce el color para los mensajes de log de la consola
+            format: format.colorize({all: true}) // Estabelce el color para los mensajes de log de la consola
         })
     ]
 });

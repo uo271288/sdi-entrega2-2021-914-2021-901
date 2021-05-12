@@ -1,5 +1,20 @@
+/**
+ * Módulo que gestiona las rutas de la entidad oferta
+ *
+ * @param app
+ * @param swig
+ * @param gestorBD
+ * @param logger
+ */
 module.exports = function (app, swig, gestorBD, logger) {
 
+    /**
+     * Función que sirve para restar una cierta cantidad de dinero al saldo de un usuario
+     *
+     * @param importe
+     * @param req
+     * @param res
+     */
     function restar(importe, req, res) {
         let criterio = {"_id": gestorBD.mongo.ObjectID(req.session.usuario._id)};
         req.session.usuario.balance = req.session.usuario.balance - importe;
@@ -25,6 +40,9 @@ module.exports = function (app, swig, gestorBD, logger) {
         });
     }
 
+    /**
+     * Muestra las ofertas para un usuario. Divide el listado en páginas
+     */
     app.get("/ofertas", function (req, res) {
         let criterio = {"autor.email": {$ne: req.session.usuario.email}};
         if (req.query.busqueda != null) {
@@ -97,6 +115,9 @@ module.exports = function (app, swig, gestorBD, logger) {
         });
     });
 
+    /**
+     * Muestra el formulario para agregar una oferta
+     */
     app.get('/ofertas/agregar', function (req, res) {
         if (typeof (req.session.errores) != "undefined") {
             let respuesta = swig.renderFile('views/agregar.html', {
@@ -116,6 +137,9 @@ module.exports = function (app, swig, gestorBD, logger) {
 
     });
 
+    /**
+     * Permite comprar una oferta
+     */
     app.get("/ofertas/comprar/:id", function (req, res) {
         let ofertaId = gestorBD.mongo.ObjectID(req.params.id);
         let compra = {
@@ -124,6 +148,13 @@ module.exports = function (app, swig, gestorBD, logger) {
         }
         gestorBD.insertarCompra(compra, function (idCompra) {
             if (idCompra == null) {
+                logger.error("Error 500: Error con la base de datos")
+                let respuesta = swig.renderFile('views/error.html',
+                    {
+                        usuario: req.session.usuario,
+                        numeroError: 500,
+                        mensaje: "Error al insertar la compra de la base de datos"
+                    });
                 res.send(respuesta);
             } else {
                 let criterio = {"_id": gestorBD.mongo.ObjectID(ofertaId)};
@@ -182,7 +213,7 @@ module.exports = function (app, swig, gestorBD, logger) {
                                                 });
                                             res.send(respuesta);
                                         } else {
-                                            logger.info(criterio._id + "");
+                                            logger.info("El usuario " + req.session.usuario.email + " ha comprado la oferta " + ofertas[0]._id.toString())
                                             res.redirect("/ofertas");
                                         }
                                     });
@@ -204,12 +235,13 @@ module.exports = function (app, swig, gestorBD, logger) {
         });
     });
 
-
+    /**
+     * Permite agregar una oferta
+     */
     app.post("/oferta", function (req, res) {
         let destacada = false;
         if (req.body.destacada)
             destacada = true;
-        console.log("Destacada: " + destacada)
         let oferta = {
             titulo: req.body.titulo.toLowerCase(),
             detalles: req.body.detalles,
@@ -260,6 +292,9 @@ module.exports = function (app, swig, gestorBD, logger) {
 
     });
 
+    /**
+     * Muestra la lista de ofertas compradas
+     */
     app.get("/compras", function (req, res) {
         let criterio = {"usuario._id": req.session.usuario._id};
 
@@ -279,7 +314,6 @@ module.exports = function (app, swig, gestorBD, logger) {
                 for (let i = 0; i < compras.length; i++) {
                     ofertasCompradasIds.push(compras[i].ofertaId);
                 }
-                logger.info(ofertasCompradasIds);
                 let criterio = {"_id": {$in: ofertasCompradasIds}}
                 gestorBD.obtenerOfertas(criterio, function (ofertas) {
                     if (ofertas == null) {
@@ -304,6 +338,9 @@ module.exports = function (app, swig, gestorBD, logger) {
         })
     });
 
+    /**
+     * Muestra la lista de las ofertas del usuario
+     */
     app.get("/ofertas/misofertas", function (req, res) {
             let criterio = {"autor._id": req.session.usuario._id};
 
@@ -343,24 +380,38 @@ module.exports = function (app, swig, gestorBD, logger) {
     )
     ;
 
+    /**
+     * Permite eliminar una oferta
+     */
     app.get('/ofertas/eliminar/:id', function (req, res) {
         let criterio = {"_id": gestorBD.mongo.ObjectID(req.params.id)};
         gestorBD.eliminarOferta(criterio, function (ofertas) {
             if (ofertas == null) {
+                logger.error("Error al eliminar la oferta")
+                let respuesta = swig.renderFile('views/error.html',
+                    {
+                        usuario: req.session.usuario,
+                        numeroError: 500,
+                        mensaje: "Error al eliminar la oferta de la base de datos"
+                    });
                 res.send(respuesta);
             } else {
-                logger.info("El usuario " + req.session.usuario.email + "ha sido redireccionado a la vista de Mis Ofertas");
+                logger.info("El usuario " + req.session.usuario.email + " ha sido redireccionado a la vista de Mis Ofertas");
                 res.redirect("/ofertas/misofertas");
             }
         });
     });
 
+    /**
+     * Permite destacar una oferta
+     */
     app.get('/ofertas/destacar/:id', function (req, res) {
         let criterio = {"_id": gestorBD.mongo.ObjectID(req.params.id)};
         if (req.session.usuario.balance - 20 >= 0) {
+            // En caso de que el usuario tenga saldo suficiente
             gestorBD.obtenerOfertas(criterio, function (ofertas) {
                 if (ofertas == null) {
-                    logger.error("Error 500: Error con la base de datos")
+                    logger.error("Error al obtener las ofertas")
                     let respuesta = swig.renderFile('views/error.html',
                         {
                             usuario: req.session.usuario,
@@ -380,7 +431,6 @@ module.exports = function (app, swig, gestorBD, logger) {
                     destacada: true,
                     comprador: ofertas[0].comprador
                 }
-
                 gestorBD.modificarOferta(criterio, oferta, function (result) {
                     if (result == null) {
                         logger.error("Error 500: Error con la base de datos")
@@ -399,6 +449,7 @@ module.exports = function (app, swig, gestorBD, logger) {
                 });
             })
         } else {
+            // En caso contrario se le muestra un error
             req.session.errores = {
                 mensaje: "Saldo insuficiente",
                 tipo: "alert alert-danger"

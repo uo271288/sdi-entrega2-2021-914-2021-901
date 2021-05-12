@@ -38,19 +38,19 @@
     </tr>
     {% for oferta in ofertas %}
     {%if oferta.destacada %}
-	<tr>
-		<td>{{ oferta.titulo }}</td>
-		<td>{{ oferta.detalles }}</td>
-		<td>{{ oferta.precio }} €</td>
-		<td>
-			{% if (oferta.comprador == null)%}
-			<a class="btn btn-primary pull-right"
-			   href="/ofertas/comprar/{{oferta._id.toString()}}">Comprar</a>
-			{% else %}
-			Vendido
-			{% endif %}
-		</td>
-	</tr>
+    <tr>
+        <td>{{ oferta.titulo }}</td>
+        <td>{{ oferta.detalles }}</td>
+        <td>{{ oferta.precio }} €</td>
+        <td>
+            {% if (oferta.comprador == null)%}
+            <a class="btn btn-primary pull-right"
+               href="/ofertas/comprar/{{oferta._id.toString()}}">Comprar</a>
+            {% else %}
+            Vendido
+            {% endif %}
+        </td>
+    </tr>
     {% endif %}
     {% endfor %}
     <th>Otras ofertas</th>
@@ -70,7 +70,7 @@
         </td>
 
     </tr>
-	{% endif %}
+    {% endif %}
     {% endfor %}
     </tbody>
     <!-- Fin del Bloque Oferta  -->

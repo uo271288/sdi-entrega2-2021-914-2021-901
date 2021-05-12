@@ -1,8 +1,8 @@
-//Módulos
+// Módulos
 let express = require('express');
 let app = express();
 
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Credentials", "true");
     res.header("Access-Control-Allow-Methods", "POST, GET, DELETE, UPDATE, PUT");
@@ -27,6 +27,11 @@ app.set('jwt', jwt);
 let gestorBD = require("./modules/gestorBD.js");
 gestorBD.init(app, mongo);
 
+/**
+ * Router para impedir que un usuario loggeado acceda al registro y al inicio de sesión
+ *
+ * @type {Router}
+ */
 let routerUsuarioLoggeado = express.Router();
 routerUsuarioLoggeado.use(function (req, res, next) {
     logger.info("routerUsuarioLoggeado");
@@ -59,7 +64,11 @@ routerUsuariosNoAdmin.use(function (req, res, next) {
 //Aplicar routerUsuariosNoAdmin
 app.use("/usuarios*", routerUsuariosNoAdmin);
 
-// routerUsuarioSession
+/**
+ * Router para impedir que un usuario no identificado acceda a las vistas. Además impide que el admin acceda a las ofertas
+ *
+ * @type {Router}
+ */
 var routerUsuarioSession = express.Router();
 routerUsuarioSession.use(function (req, res, next) {
     logger.info("routerUsuarioSession");
@@ -82,14 +91,18 @@ app.use("/ofertas/agregar", routerUsuarioSession);
 app.use("/ofertas/misofertas", routerUsuarioSession);
 app.use("/compras", routerUsuarioSession);
 
-//routerUsuarioAutor
+/**
+ * Permite que solo el autor de una oferta pueda eliminarla
+ *
+ * @type {Router}
+ */
 let routerUsuarioAutor = express.Router();
 routerUsuarioAutor.use(function (req, res, next) {
     logger.info("routerUsuarioAutor");
     let path = require('path');
     let id = path.basename(req.originalUrl);
-// Cuidado porque req.params no funciona
-// en el router si los params van en la URL.
+    // Cuidado porque req.params no funciona
+    // en el router si los params van en la URL.
     gestorBD.obtenerOfertas(
         {_id: mongo.ObjectID(id)}, function (ofertas) {
             logger.info(ofertas[0]);
@@ -113,13 +126,18 @@ routerUsuarioAutor.use(function (req, res, next) {
 //Aplicar routerUsuarioAutor
 app.use("/ofertas/eliminar", routerUsuarioAutor);
 
+/**
+ * Impide que el autor de una oferta pueda comprarla
+ *
+ * @type {Router}
+ */
 let routerUsuarioNoAutor = express.Router();
 routerUsuarioNoAutor.use(function (req, res, next) {
     logger.info("routerUsuarioNoAutor");
     let path = require('path');
     let id = path.basename(req.originalUrl);
-// Cuidado porque req.params no funciona
-// en el router si los params van en la URL.
+    // Cuidado porque req.params no funciona
+    // en el router si los params van en la URL.
     gestorBD.obtenerOfertas(
         {_id: mongo.ObjectID(id)}, function (ofertas) {
             logger.info(ofertas[0]);
@@ -143,7 +161,11 @@ routerUsuarioNoAutor.use(function (req, res, next) {
 //Aplicar routerUsuarioAutor
 app.use("/ofertas/comprar", routerUsuarioNoAutor);
 
-// routerUsuarioToken
+/**
+ * Impide que un usuario no autenticado acceda a las ofertas y a las conversaciones
+ *
+ * @type {Router}
+ */
 let routerUsuarioToken = express.Router();
 routerUsuarioToken.use(function (req, res, next) {
     // obtener el token, vía headers (opcionalmente GET y/o POST)
@@ -183,10 +205,16 @@ require("./routes/rusuarios.js")(app, swig, gestorBD, logger); // (app, param1, 
 require("./routes/rofertas.js")(app, swig, gestorBD, logger); // (app, param1, param2, etc.)
 require("./routes/rapiofertas.js")(app, gestorBD, logger); // (app, param1, param2, etc.)
 
+/**
+ * Establece identificarse como página raiz
+ */
 app.get('/', function (req, res) {
     res.redirect('/identificarse');
 })
 
+/**
+ * Recoge todas aquellos errores surgidos de URL no encontrada y muestra un mensaje de error
+ */
 app.get('/*', function (req, res) {
     let respuesta = swig.renderFile('views/error.html',
         {
@@ -198,6 +226,9 @@ app.get('/*', function (req, res) {
     res.send(respuesta);
 })
 
+/**
+ * Recoge los errores de recursos no disponibles
+ */
 app.use(function (err, req, res, next) {
     console.log("Error producido: " + err);
     if (!res.headersSent) {

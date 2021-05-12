@@ -74,6 +74,12 @@ module.exports = {
             }
         });
     },
+    /**
+     * Permite insertar una compra en la BBDD
+     *
+     * @param compra
+     * @param funcionCallback
+     */
     insertarCompra: function (compra, funcionCallback) {
         this.mongo.MongoClient.connect(this.app.get('db'), function (err, db) {
             if (err) {
@@ -91,6 +97,12 @@ module.exports = {
             }
         });
     },
+    /**
+     * Permite obtener las compras de la BBDD
+     *
+     * @param criterio
+     * @param funcionCallback
+     */
     obtenerCompras: function (criterio, funcionCallback) {
         this.mongo.MongoClient.connect(this.app.get('db'), function (err, db) {
             if (err) {
@@ -108,6 +120,13 @@ module.exports = {
             }
         });
     },
+    /**
+     * Permite modificar una oferta de la BBDD
+     *
+     * @param criterio
+     * @param oferta
+     * @param funcionCallback
+     */
     modificarOferta: function (criterio, oferta, funcionCallback) {
         this.mongo.MongoClient.connect(this.app.get('db'), function (err, db) {
             if (err) {
@@ -125,6 +144,13 @@ module.exports = {
             }
         });
     },
+    /**
+     * Permite modificar un usuario de la BBDD
+     *
+     * @param criterio
+     * @param usuario
+     * @param funcionCallback
+     */
     modificarUsuario: function (criterio, usuario, funcionCallback) {
         this.mongo.MongoClient.connect(this.app.get('db'), function (err, db) {
             if (err) {
@@ -142,6 +168,12 @@ module.exports = {
             }
         });
     },
+    /**
+     * Permite eliminar una oferta de la BBDD
+     *
+     * @param criterio
+     * @param funcionCallback
+     */
     eliminarOferta: function (criterio, funcionCallback) {
         this.mongo.MongoClient.connect(this.app.get('db'), function (err, db) {
             if (err) {
@@ -159,6 +191,12 @@ module.exports = {
             }
         });
     },
+    /**
+     * Permite obtener las ofertas de la BBDD
+     *
+     * @param criterio
+     * @param funcionCallback
+     */
     obtenerOfertas: function (criterio, funcionCallback) {
         this.mongo.MongoClient.connect(this.app.get('db'), function (err, db) {
             if (err) {
@@ -176,6 +214,12 @@ module.exports = {
             }
         });
     },
+    /**
+     * Permite insertar una oferta en la BBDD
+     *
+     * @param oferta
+     * @param funcionCallback
+     */
     insertarOferta: function (oferta, funcionCallback) {
         this.mongo.MongoClient.connect(this.app.get('db'), function (err, db) {
             if (err) {
@@ -193,6 +237,13 @@ module.exports = {
             }
         });
     },
+    /**
+     * Permite obtener las ofertas de la BBDD con paginación
+     *
+     * @param criterio
+     * @param pg
+     * @param funcionCallback
+     */
     obtenerOfertasPg: function (criterio, pg, funcionCallback) {
         this.mongo.MongoClient.connect(this.app.get('db'), function (err, db) {
             if (err) {
@@ -213,6 +264,12 @@ module.exports = {
             }
         });
     },
+    /**
+     * Permite insertar una conversación en la BBDD
+     *
+     * @param mensaje
+     * @param funcionCallback
+     */
     insertarConversacion: function (mensaje, funcionCallback) {
         this.mongo.MongoClient.connect(this.app.get('db'), function (err, db) {
             if (err) {
@@ -230,6 +287,12 @@ module.exports = {
             }
         });
     },
+    /**
+     * Permite obtener una conversación de la BBDD
+     *
+     * @param criterio
+     * @param funcionCallback
+     */
     obtenerConversacion: function (criterio, funcionCallback) {
         this.mongo.MongoClient.connect(this.app.get('db'), function (err, db) {
             if (err) {
@@ -246,22 +309,5 @@ module.exports = {
                 });
             }
         });
-    },
-    modificarConversacion: function (criterio, conversacion, funcionCallback) {
-        this.mongo.MongoClient.connect(this.app.get('db'), function (err, db) {
-            if (err) {
-                funcionCallback(null);
-            } else {
-                let collection = db.collection('conversaciones');
-                collection.update(criterio, {$set: conversacion}, function (err, result) {
-                    if (err) {
-                        funcionCallback(null);
-                    } else {
-                        funcionCallback(result);
-                    }
-                    db.close();
-                });
-            }
-        });
-    },
+    }
 };

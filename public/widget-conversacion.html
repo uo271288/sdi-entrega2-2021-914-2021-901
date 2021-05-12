@@ -6,7 +6,7 @@
         <label class="control-label col-sm-2" for="mensaje">Nuevo Mensaje:</label>
         <div class="col-sm-10">
             <input type="text" class="form-control" name="mensaje"
-                   placeholder="Nuevo mensaje" id="mensaje" />
+                   placeholder="Nuevo mensaje" id="mensaje"/>
         </div>
         <div class="col-sm-offset-2 col-sm-10">
             <button onclick="agregarMensaje()" type="button" id="boton-mensaje" class="btn">Enviar</button>
@@ -16,6 +16,7 @@
 
 <script>
     var mensajes;
+
     function cargarConversacion() {
         $.ajax({
             url: URLbase + "/conversacion/" + idOfertaSeleccionada,
@@ -39,23 +40,23 @@
         $("#conversacion").empty(); // Vaciar la tabla
         for (i = 0; i < mensajesMostrar.length; i++) {
             $("#conversacion").append(
-                "<div class='left clearfix' id = " +  mensajesMostrar[i]._id + ">" +
-                    "<div className='chat-body'>" +
-                        "<div className='header'>" +
-                            "<b>" + mensajesMostrar[i].mensaje.autor + "</b>"+
-                        "</div>"+
-                        "<p>"+
-                            mensajesMostrar[i].mensaje.mensaje+
-                        "</p>"+
-                    "</div>"+
+                "<div class='left clearfix' id = " + mensajesMostrar[i]._id + ">" +
+                "<div className='chat-body'>" +
+                "<div className='header'>" +
+                "<b>" + mensajesMostrar[i].mensaje.autor + "</b>" +
+                "</div>" +
+                "<p>" +
+                mensajesMostrar[i].mensaje.mensaje +
+                "</p>" +
+                "</div>" +
                 "</div>"
-                );
+            );
             // Mucho cuidado con las comillas del eliminarCancion
             //la id tiene que ir entre comillas ' '
         }
     }
 
-    function agregarMensaje( ) {
+    function agregarMensaje() {
         $.ajax({
             url: URLbase + "/conversacion",
             type: "POST",
@@ -75,7 +76,7 @@
         });
     }
 
-    setInterval(function() {
+    setInterval(function () {
         cargarConversacion();
     }, 1000);
 </script>
