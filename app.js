@@ -184,7 +184,18 @@ require("./routes/rofertas.js")(app, swig, gestorBD, logger); // (app, param1, p
 require("./routes/rapiofertas.js")(app, gestorBD, logger); // (app, param1, param2, etc.)
 
 app.get('/', function (req, res) {
-    res.redirect('/ofertas');
+    res.redirect('/identificarse');
+})
+
+app.get('/*', function (req, res) {
+    let respuesta = swig.renderFile('views/error.html',
+        {
+            usuario: req.session.usuario,
+            numeroError: 404,
+            mensaje: "La URL " + req.url + " no existe en este servidor"
+        });
+    logger.error("Error 404: La URL " + req.url + " no existe en este servidor");
+    res.send(respuesta);
 })
 
 app.use(function (err, req, res, next) {

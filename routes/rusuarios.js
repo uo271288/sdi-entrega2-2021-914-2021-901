@@ -45,7 +45,6 @@ module.exports = function (app, swig, gestorBD, logger) {
     app.post('/usuarios/eliminar', function (req, res) {
         let criterio;
         let usuarios = req.body.usuariosEliminar;
-        console.log(usuarios);
         if (typeof (usuarios) != 'undefined') {
             if (typeof (usuarios) == "string") {
                 // Si existe un único usuario se le pasa este para borrarlo
@@ -56,9 +55,34 @@ module.exports = function (app, swig, gestorBD, logger) {
             }
             gestorBD.eliminarUsuarios(criterio, function (result) {
                 if (result == null) {
+                    let respuesta = swig.renderFile('views/error.html',
+                        {
+                            usuario: req.session.usuario,
+                            numeroError: 500,
+                            mensaje: "Error al eliminar usuarios"
+                        });
                     logger.error("Error al eliminar usuarios");
-                    res.send("Error al eliminar usuarios");
+                    res.send(respuesta);
                 } else {
+                    let criterio;
+                    if (typeof (usuarios) == "string") {
+                        criterio = {"autor.email": usuarios};
+                    } else {
+                        criterio = {"autor.email": {$in: usuarios}};
+                    }
+                    gestorBD.eliminarOferta(criterio, function (result) {
+                        if (result == null) {
+                            let respuesta = swig.renderFile('views/error.html',
+                                {
+                                    usuario: req.session.usuario,
+                                    numeroError: 500,
+                                    mensaje: "Error al eliminar usuarios"
+                                });
+                            logger.error("Error al eliminar usuarios");
+                            res.send(respuesta);
+                        }
+                    })
+
                     logger.info("Se han eliminado los usuarios " + usuarios + " correctamente");
                     req.session.errores = {
                         mensaje: "Se han eliminado los usuarios correctamente",
@@ -166,12 +190,14 @@ module.exports = function (app, swig, gestorBD, logger) {
                         gestorBD.insertarUsuario(usuario, function (id) {
                             if (id == null) {
                                 // En caso de que surja algún error al intentar registrar al usuario se le muestra un error
-                                req.session.errores = {
-                                    mensaje: "Error al registrar usuario",
-                                    tipo: "alert alert-danger"
-                                }
+                                let respuesta = swig.renderFile('views/error.html',
+                                    {
+                                        usuario: req.session.usuario,
+                                        numeroError: 500,
+                                        mensaje: "Error de registro."
+                                    });
                                 logger.error("Error de registro.");
-                                res.redirect("/registrarse");
+                                res.redirect(respuesta);
                             } else {
                                 req.session.usuario = usuario;
                                 logger.info("El usuario " + usuario.email + " ha iniciado sesión");

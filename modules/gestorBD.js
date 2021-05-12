@@ -148,7 +148,7 @@ module.exports = {
                 funcionCallback(null);
             } else {
                 let collection = db.collection('ofertas');
-                collection.remove(criterio, function (err, result) {
+                collection.removeMany(criterio, function (err, result) {
                     if (err) {
                         funcionCallback(null);
                     } else {

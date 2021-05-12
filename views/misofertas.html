@@ -2,37 +2,46 @@
 {% block titulo %} MisOfertas – MyWallapop {% endblock %}
 {% block contenido_principal %}
 <!-- Búsqueda -->
-  <h2>Mis Ofertas</h2>
+<h2>Mis Ofertas</h2>
 
-	<div class="row text-right">
-		<a href="/ofertas/agregar" class="btn btn-info" role="button">Agregar Oferta</a>
-	</div>
-	  <!-- http://librosweb.es/libro/bootstrap_3/capitulo_2/tipos_de_rejillas.html -->
-	  <!-- Inicio del Bloque Oferta  -->
+<div class="row text-right">
+    <a href="/ofertas/agregar" class="btn btn-info" role="button">Agregar Oferta</a>
+</div>
+<!-- http://librosweb.es/libro/bootstrap_3/capitulo_2/tipos_de_rejillas.html -->
+<!-- Inicio del Bloque Oferta  -->
 
-	  <table class="table table-hover" id="tableOffers">
-		  <thead>
-		  	<tr>
-			  	<th>Titulo</th>
-			  	<th>Detalles</th>
-			  	<th>Precio</th>
-			  	<th class="col-md-1"></th>
-		  	</tr>
-		  </thead>
-		  <tbody>
-		  {% for oferta in ofertas %}
-		  <tr>
-			  <td>{{ oferta.titulo }} </td>
-			  <td>{{ oferta.detalles }} </td>
-			  <td>{{ oferta.precio }} €</td>
-			  <td>
-				  <a class="btn btn-primary pull-right"
-					 href="/ofertas/eliminar/{{oferta._id.toString()}}">Eliminar</a>
-			  </td>
-		  </tr>
-	  		{% endfor %}
-		  </tbody>
-	  <!-- Fin del Bloque Oferta  -->
-	  </table>
-   </div>
+<table class="table table-hover" id="tableOffers">
+    <thead>
+    <tr>
+        <th>Titulo</th>
+        <th>Detalles</th>
+        <th>Precio</th>
+        <th></th>
+        <th class="col-md-1"></th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for oferta in ofertas %}
+    <tr>
+        <td>{{ oferta.titulo }}</td>
+        <td>{{ oferta.detalles }}</td>
+        <td>{{ oferta.precio }} €</td>
+        <td>
+            {% if oferta.destacada %}
+            <span class="glyphicon glyphicon-star"></span>
+            {% else %}
+            <a class="btn btn-primary pull-right"
+               href="/ofertas/destacar/{{oferta._id.toString()}}">Destacar</a>
+            {% endif %}
+        </td>
+        <td>
+            <a class="btn btn-primary pull-right"
+               href="/ofertas/eliminar/{{oferta._id.toString()}}">Eliminar</a>
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+    <!-- Fin del Bloque Oferta  -->
+</table>
+</div>
 {% endblock %}
