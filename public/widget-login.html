@@ -15,7 +15,7 @@
     </div>
     <div class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
-            <button type="button" id="boton-login">Aceptar</button>
+            <button class = "btn" type="button" id="boton-login">Aceptar</button>
         </div>
     </div>
 </div>
@@ -39,7 +39,8 @@
             },
             error: function (error) {
                 Cookies.remove('token');
-                $("widget-login").prepend("<div class='alert alert-danger'>Usuario no encontrado</div>")
+                $("#error").remove();
+                $("#widget-login").prepend("<div class='alert alert-danger' id='error'>Usuario o contraseña incorrectos</div>");
             }
         });
     });
