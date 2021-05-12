@@ -9,7 +9,8 @@ import org.openqa.selenium.WebElement;
 import com.uniovi.test.util.SeleniumUtils;
 
 public class PO_PrivateView extends PO_NavView {
-    static public void fillFormAddOffer(WebDriver driver, String titulop, String descriptionp, String pricep) {
+    static public void fillFormAddOffer(WebDriver driver, String titulop, String descriptionp, String pricep,
+	    boolean destacadap) {
 	// Esperamos 5 segundo a que carge el DOM porque en algunos equipos falla
 	SeleniumUtils.esperarSegundos(driver, 5);
 	// Rellenemos el campo de titulo
@@ -25,6 +26,10 @@ public class PO_PrivateView extends PO_NavView {
 	price.click();
 	price.clear();
 	price.sendKeys(pricep);
+	if (destacadap) {
+	    WebElement destacada = driver.findElement(By.name("destacada"));
+	    destacada.click();
+	}
 	By boton = By.className("btn");
 	driver.findElement(boton).click();
     }

@@ -97,7 +97,6 @@ module.exports = function (app, gestorBD, logger) {
                                 })
                             } else {
                                 res.status(200);
-                                ç
                                 logger.info("API: se ha cargado la conversación")
                                 res.send(JSON.stringify(conversacion));
                             }

@@ -105,7 +105,6 @@ routerUsuarioAutor.use(function (req, res, next) {
     // en el router si los params van en la URL.
     gestorBD.obtenerOfertas(
         {_id: mongo.ObjectID(id)}, function (ofertas) {
-            logger.info(ofertas[0]);
             if (ofertas[0] == null) {
                 logger.error("Error 404: La oferta " + id + " no esta disponible o no existe")
                 let respuesta = swig.renderFile('views/error.html',

@@ -22,9 +22,9 @@
 
 <!-- http://librosweb.es/libro/bootstrap_3/capitulo_2/tipos_de_rejillas.html -->
 <!-- Inicio del Bloque Oferta  -->
-
-<table class="table table-hover" id="tableOffers">
+<table class="table table-hover" id="tableDestacadas">
     <thead>
+    <th>Ofertas destacadas</th>
     <tr>
         <th>Titulo</th>
         <th>Detalles</th>
@@ -33,27 +33,39 @@
     </tr>
     </thead>
     <tbody>
-    <tr>
-        <th>Ofertas destacadas</th>
-    </tr>
-    {% for oferta in ofertas %}
-    {%if oferta.destacada %}
-    <tr>
-        <td>{{ oferta.titulo }}</td>
-        <td>{{ oferta.detalles }}</td>
-        <td>{{ oferta.precio }} €</td>
-        <td>
-            {% if (oferta.comprador == null)%}
-            <a class="btn btn-primary pull-right"
-               href="/ofertas/comprar/{{oferta._id.toString()}}">Comprar</a>
-            {% else %}
-            Vendido
-            {% endif %}
-        </td>
-    </tr>
-    {% endif %}
-    {% endfor %}
+
+{% for oferta in ofertas %}
+{%if oferta.destacada %}
+<tr>
+    <td>{{ oferta.titulo }}</td>
+    <td>{{ oferta.detalles }}</td>
+    <td>{{ oferta.precio }} €</td>
+    <td>
+        {% if (oferta.comprador == null)%}
+        <a class="btn btn-primary pull-right"
+           href="/ofertas/comprar/{{oferta._id.toString()}}">Comprar</a>
+        {% else %}
+        Vendido
+        {% endif %}
+    </td>
+</tr>
+{% endif %}
+{% endfor %}
+    </tbody>
+</table>
+
+<table class="table table-hover" id="tableOffers">
+    <thead>
     <th>Otras ofertas</th>
+    <tr>
+        <th>Titulo</th>
+        <th>Detalles</th>
+        <th>Precio</th>
+        <th class="col-md-1"></th>
+    </tr>
+    </thead>
+    <tbody>
+
     {% for oferta in ofertas %}
     {%if !oferta.destacada %}
     <tr>
